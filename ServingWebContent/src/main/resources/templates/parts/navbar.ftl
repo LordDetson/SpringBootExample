@@ -21,6 +21,11 @@
                     <a class="nav-link" href="/user">List of users</a>
                 </li>
             </#if>
+            <#if user??>
+                <li class="nav-item">
+                    <a class="nav-link" href="/user/profile">Your profile</a>
+                </li>
+            </#if>
         </ul>
         <div class="navbar-text mr-3">${username}</div>
         <@l.logout/>
