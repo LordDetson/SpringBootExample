@@ -6,6 +6,7 @@ import by.babanin.model.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -17,15 +18,21 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final MailSend mailSend;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, MailSend mailSend) {
+    public UserService(UserRepository userRepository, MailSend mailSend, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.mailSend = mailSend;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        return userRepository.findByUsername(s);
+        User byUsername = userRepository.findByUsername(s);
+        if (byUsername == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
+        return byUsername;
     }
 
     public boolean addUser(User user) {
@@ -36,6 +43,7 @@ public class UserService implements UserDetailsService {
         user.setActive(true);
         user.setRoles(Collections.singleton(Role.USER));
         user.setActivationCode(UUID.randomUUID().toString());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         sendActivationCode(user);
         return true;
@@ -99,4 +107,6 @@ public class UserService implements UserDetailsService {
             sendActivationCode(user);
         }
     }
+
+
 }

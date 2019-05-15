@@ -1,0 +1,1 @@
+update `user` set `password`='$2a$08$z0x3lOFhZLMP15yeZm1J7.P0IbrP7JqGZYu9CkoP2uXSUHR1JYnfG';

@@ -1,10 +1,14 @@
 package by.babanin.model;
 
+import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
 
@@ -13,8 +17,18 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+
+    @NotBlank(message = "Username can not be empty")
+    @Length(max = 255, message = "Username too long")
     private String username;
+
+    @NotBlank(message = "Password can not be empty")
+    @Length(max = 255, message = "Password too long")
     private String password;
+
+    @Email(message = "Mail is not correct")
+    @NotBlank(message = "Mail can not be empty")
+    @Length(max = 255, message = "Mail too long")
     private String email;
     private String activationCode;
     private Boolean active;
@@ -23,6 +37,9 @@ public class User implements UserDetails {
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Message> messages;
 
     public User() {
     }
@@ -125,12 +142,24 @@ public class User implements UserDetails {
         this.activationCode = activationCode;
     }
 
+    public Set<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(Set<Message> messages) {
+        this.messages = messages;
+    }
+
     @Override
-    public String toString() {
-        return new StringJoiner(", ", User.class.getSimpleName() + "[", "]")
-                .add("id=" + id)
-                .add("username='" + username + "'")
-                .add("email='" + email + "'")
-                .toString();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id.equals(user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
