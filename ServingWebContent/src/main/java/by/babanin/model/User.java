@@ -1,9 +1,12 @@
 package by.babanin.model;
 
+import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -13,8 +16,22 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+
+    @NotBlank(message = "Username can not be empty")
+    @Length(max = 255, message = "Username too long")
     private String username;
+
+    @NotBlank(message = "Password can not be empty")
+    @Length(max = 255, message = "Password too long")
     private String password;
+
+    @Transient
+    @NotBlank(message = "Password confirmation can not be empty")
+    private String password2;
+
+    @Email(message = "Mail is not correct")
+    @NotBlank(message = "Mail can not be empty")
+    @Length(max = 255, message = "Mail too long")
     private String email;
     private String activationCode;
     private Boolean active;
@@ -125,12 +142,11 @@ public class User implements UserDetails {
         this.activationCode = activationCode;
     }
 
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", User.class.getSimpleName() + "[", "]")
-                .add("id=" + id)
-                .add("username='" + username + "'")
-                .add("email='" + email + "'")
-                .toString();
+    public String getPassword2() {
+        return password2;
+    }
+
+    public void setPassword2(String password2) {
+        this.password2 = password2;
     }
 }

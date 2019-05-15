@@ -15,15 +15,27 @@
        aria-controls="addNewMessage">
         Add new message
     </a>
-    <div class="collapse" id="addNewMessage">
+    <div class="collapse <#if message??>show</#if>" id="addNewMessage">
         <div class="form-group mt-3">
             <form action="/addNewMessage" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="_csrf" value="${_csrf.token}">
                 <div class="form-group">
-                    <input class="form-control" type="text" name="text" placeholder="Text"/>
+                    <input class="form-control ${(textError??)?string('is-invalid', '')}" type="text" name="text"
+                           placeholder="Text" value="<#if message??>${message.text}</#if>"/>
+                    <#if textError??>
+                        <div class="invalid-feedback">
+                            ${textError}
+                        </div>
+                    </#if>
                 </div>
                 <div class="form-group">
-                    <input class="form-control" type="text" name="tag" placeholder="Tag"/>
+                    <input class="form-control ${(tagError??)?string('is-invalid', '')}" type="text" name="tag"
+                           placeholder="Tag" value="<#if message??>${message.tag}</#if>"/>
+                    <#if tagError??>
+                        <div class="invalid-feedback">
+                            ${tagError}
+                        </div>
+                    </#if>
                 </div>
                 <div class="form-group">
                     <div class="custom-file">
