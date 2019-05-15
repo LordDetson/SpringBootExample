@@ -4,10 +4,12 @@ import by.babanin.model.User;
 import by.babanin.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 import java.util.Map;
@@ -26,11 +28,20 @@ public class RegistrationController {
     }
 
     @PostMapping("/registration")
-    public String addNewUser(@Valid User user, BindingResult bindingResult, Model model) {
-        if (user.getPassword() != null && !user.getPassword().equals(user.getPassword2())) {
+    public String addNewUser(
+            @RequestParam("password2") String passwordConfirmation,
+            @Valid User user,
+            BindingResult bindingResult,
+            Model model
+    ) {
+        boolean isConfirmEmpty = StringUtils.isEmpty(passwordConfirmation);
+        if (isConfirmEmpty) {
+            model.addAttribute("password2Error", "Password confirmation can not empty");
+        }
+        if (user.getPassword() != null && !user.getPassword().equals(passwordConfirmation)) {
             model.addAttribute("passwordError", "Password are different");
         }
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors() || isConfirmEmpty) {
             Map<String, String> errorMap = ControllerUtils.getErrorMap(bindingResult);
             model.mergeAttributes(errorMap);
             return "registration";

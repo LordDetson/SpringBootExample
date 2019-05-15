@@ -25,10 +25,6 @@ public class User implements UserDetails {
     @Length(max = 255, message = "Password too long")
     private String password;
 
-    @Transient
-    @NotBlank(message = "Password confirmation can not be empty")
-    private String password2;
-
     @Email(message = "Mail is not correct")
     @NotBlank(message = "Mail can not be empty")
     @Length(max = 255, message = "Mail too long")
@@ -140,13 +136,5 @@ public class User implements UserDetails {
 
     public void setActivationCode(String activationCode) {
         this.activationCode = activationCode;
-    }
-
-    public String getPassword2() {
-        return password2;
-    }
-
-    public void setPassword2(String password2) {
-        this.password2 = password2;
     }
 }
