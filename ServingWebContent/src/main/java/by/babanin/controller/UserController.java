@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/user")
@@ -62,5 +63,39 @@ public class UserController {
     ) {
         userService.updateUser(user, username, password, email);
         return "redirect:/user/profile";
+    }
+
+    @GetMapping("/subscribe/{userChannel}")
+    public String subscribe(
+            @AuthenticationPrincipal User user,
+            @PathVariable User userChannel
+    ) {
+        userService.subscribe(userChannel, user);
+        return "redirect:/user-messages/" + userChannel.getId();
+    }
+
+    @GetMapping("/unsubscribe/{userChannel}")
+    public String unsubscribe(
+            @AuthenticationPrincipal User user,
+            @PathVariable User userChannel
+    ) {
+        userService.unsubscribe(userChannel, user);
+        return "redirect:/user-messages/" + userChannel.getId();
+    }
+
+    @GetMapping("/{type}/{user}/list")
+    public String userList(
+            @PathVariable String type,
+            @PathVariable User user,
+            Model model
+    ) {
+        model.addAttribute("userChannel", user);
+        model.addAttribute("type", type);
+        if ("subscriptions".equals(type)) {
+            model.addAttribute("users", user.getSubscriptions());
+        } else {
+            model.addAttribute("users", user.getSubscribers());
+        }
+        return "subscriptions";
     }
 }

@@ -109,4 +109,13 @@ public class UserService implements UserDetailsService {
     }
 
 
+    public void subscribe(User userChannel, User user) {
+        userChannel.getSubscribers().add(user);
+        userRepository.save(userChannel);
+    }
+
+    public void unsubscribe(User userChannel, User user) {
+        userChannel.getSubscribers().remove(user);
+        userRepository.save(userChannel);
+    }
 }
